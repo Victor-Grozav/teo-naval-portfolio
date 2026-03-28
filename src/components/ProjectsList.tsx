@@ -1,0 +1,58 @@
+'use client'
+
+import { useState } from 'react'
+import Nav from './Nav'
+import ProjectRow from './ProjectRow'
+
+interface Project {
+  _id: string
+  title: string
+  location: string
+  year?: string
+  client?: string
+  typology?: string
+  surface?: string
+  status?: string
+  category?: string
+  mainImage: object
+  gallery?: Array<{ image: object; caption?: string }>
+  description?: object[]
+  coordinates?: { lat: number; lng: number }
+}
+
+export default function ProjectsList({ projects }: { projects: Project[] }) {
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const [activeCategory, setActiveCategory] = useState<string | null>(null)
+
+  const filtered = activeCategory
+    ? projects.filter((p) => p.category === activeCategory)
+    : projects
+
+  return (
+    <>
+      <Nav activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
+      <section>
+        {filtered.length === 0 ? (
+          <div className="flex items-center justify-center h-64 text-gray-400 text-sm tracking-widest uppercase">
+            Niciun proiect în această categorie
+          </div>
+        ) : (
+          filtered.map((project) => (
+            <ProjectRow
+              key={project._id}
+              project={project}
+              isOpen={activeId === project._id}
+              onToggle={() =>
+                setActiveId(activeId === project._id ? null : project._id)
+              }
+            />
+          ))
+        )}
+      </section>
+      <footer className="px-8 py-10 border-t border-gray-100 flex justify-between items-center text-[11px] tracking-[0.08em] text-gray-300">
+        <span>TEO NAVAL — ARHITECTURĂ & DESIGN</span>
+        <span>© {new Date().getFullYear()}</span>
+      </footer>
+    </>
+  )
+}
