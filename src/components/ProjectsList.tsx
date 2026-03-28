@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Nav from './Nav'
 import ProjectRow from './ProjectRow'
 
@@ -23,6 +23,19 @@ interface Project {
 export default function ProjectsList({ projects }: { projects: Project[] }) {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
+
+  useEffect(() => {
+    const handlePopState = () => setActiveId(null)
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) setActiveId(null)
+    }
+    window.addEventListener('popstate', handlePopState)
+    window.addEventListener('pageshow', handlePageShow)
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+      window.removeEventListener('pageshow', handlePageShow)
+    }
+  }, [])
 
   const filtered = activeCategory
     ? projects.filter((p) => p.category === activeCategory)

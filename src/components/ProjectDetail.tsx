@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import { urlFor } from '@/lib/sanity'
@@ -31,6 +31,21 @@ interface ProjectDetailProps {
 
 export default function ProjectDetail({ project, onClose }: ProjectDetailProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+
+    const handleWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaX) > 0) {
+        e.preventDefault()
+        el.scrollLeft += e.deltaX
+      }
+    }
+
+    el.addEventListener('wheel', handleWheel, { passive: false })
+    return () => el.removeEventListener('wheel', handleWheel)
+  }, [])
 
   return (
     <div className="border-b border-gray-100 overflow-hidden animate-slideDown">
@@ -139,23 +154,29 @@ export default function ProjectDetail({ project, onClose }: ProjectDetailProps) 
           )}
         </div>
 
-        {/* ── Col 4+: Gallery images ── */}
+        {/* ── Col 4+: Gallery images with caption panels ── */}
         {project.gallery && project.gallery.length > 0 ? (
           project.gallery.map((item, idx) => (
-            <div
-              key={idx}
-              className="flex-shrink-0 relative border-l border-gray-100"
-              style={{ width: '480px' }}
-            >
-              <Image
-                src={urlFor(item.image).width(960).height(1040).url()}
-                alt={item.caption || `Imagine ${idx + 2}`}
-                fill
-                className="object-cover"
-              />
+            <div key={idx} className="flex flex-row flex-shrink-0">
+              {/* Image column */}
+              <div
+                className="flex-shrink-0 relative border-l border-gray-100"
+                style={{ width: '480px' }}
+              >
+                <Image
+                  src={urlFor(item.image).width(960).height(1040).url()}
+                  alt={item.caption || `Imagine ${idx + 2}`}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              {/* Caption panel */}
               {item.caption && (
-                <div className="absolute bottom-4 left-4 right-4 text-[10px] text-white bg-black/40 px-2 py-1 uppercase tracking-[0.08em]">
-                  {item.caption}
+                <div
+                  className="flex-shrink-0 flex flex-col justify-center px-10 py-10 border-l border-gray-100"
+                  style={{ width: '300px' }}
+                >
+                  <p className="text-[13px] leading-[1.8] text-gray-700">{item.caption}</p>
                 </div>
               )}
             </div>
