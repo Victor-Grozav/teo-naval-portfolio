@@ -96,9 +96,10 @@ export const projectSchema = defineType({
             defineField({
               name: 'caption',
               title: 'Legendă (opțional)',
-              type: 'string',
+              type: 'text',
+              rows: 6,
               validation: (Rule) => Rule.max(500),
-              description: 'Max 500 caractere',
+              description: 'Max 500 caractere (inclusiv spații și aliniate)',
             }),
           ],
           preview: {

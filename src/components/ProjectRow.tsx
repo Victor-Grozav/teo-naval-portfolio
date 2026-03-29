@@ -284,9 +284,7 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
                               style={{
                                 overflowWrap: 'break-word',
                                 wordBreak: 'break-word',
-                                display: '-webkit-box',
-                                WebkitLineClamp: 18,
-                                WebkitBoxOrient: 'vertical',
+                                whiteSpace: 'pre-wrap',
                                 overflow: 'hidden',
                               }}
                             >
