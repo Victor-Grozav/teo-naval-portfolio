@@ -64,8 +64,25 @@ function CategoryIcon({ category }: { category?: string }) {
 export default function ProjectRow({ project, isOpen, priority = false, onToggle }: ProjectRowProps) {
   const rowRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
-  // Delay gallery render until container transition finishes — eliminates end-of-transition pop
   const [showGallery, setShowGallery] = useState(false)
+  const [vw, setVw] = useState(0) // 0 = SSR (renders desktop)
+
+  useEffect(() => {
+    const update = () => setVw(window.innerWidth)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+
+  const isMobile = vw > 0 && vw < 768
+
+  // Dimensions
+  const PREVIEW_SIZE = 500
+  const GALLERY_HEIGHT = 520
+  const previewW = isMobile ? Math.round(vw * 0.88) : PREVIEW_SIZE
+  const previewH = isMobile ? Math.round(vw * 0.56) : PREVIEW_SIZE
+  const galleryH = isMobile ? 400 : GALLERY_HEIGHT
+  const panelW = isMobile ? Math.round(vw * 0.84) : 0 // 16vw peek of next panel
 
   useEffect(() => {
     if (isOpen) {
@@ -76,7 +93,7 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
     }
   }, [isOpen])
 
-  // Scroll into view when opening — only if row is below the fold
+  // Scroll into view when opening
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => {
@@ -90,7 +107,7 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
     }
   }, [isOpen])
 
-  // Horizontal wheel handler for gallery
+  // Horizontal wheel handler for gallery (desktop only)
   useEffect(() => {
     const el = scrollRef.current
     if (!el) return
@@ -106,56 +123,56 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
     return () => el.removeEventListener('wheel', handleWheel)
   }, [isOpen])
 
-  const PREVIEW_SIZE = 500   // square preview
-  const GALLERY_HEIGHT = 520
-
   return (
     <div ref={rowRef} className="border-b border-gray-100">
       <div
-        className="flex items-start pr-0"
+        className="flex items-center"
         style={{
-          paddingTop: isOpen ? '0px' : '48px',
-          paddingBottom: isOpen ? '0px' : '48px',
+          paddingTop: isOpen ? '0px' : isMobile ? '16px' : '48px',
+          paddingBottom: isOpen ? '0px' : isMobile ? '16px' : '48px',
+          paddingLeft: isMobile && !isOpen ? '16px' : '0px',
           transition: 'padding 0.35s ease',
         }}
       >
-        {/* Left: meta — hidden when gallery is open */}
-        <div
-          className="flex-shrink-0 flex flex-col items-end pr-10 pt-2 cursor-pointer overflow-hidden"
-          style={{
-            width: isOpen ? '0px' : '420px',
-            opacity: isOpen ? 0 : 1,
-            paddingRight: isOpen ? '0px' : undefined,
-            transition: 'width 0.35s ease, opacity 0.25s ease',
-          }}
-          onClick={onToggle}
-        >
-          <div className="w-12 h-12 bg-black flex items-center justify-center mb-3">
-            <CategoryIcon category={project.category} />
-          </div>
-          <div className="text-[16px] font-normal text-right mb-1 leading-snug">
-            {project.title}
-          </div>
-          <div className="text-[11px] uppercase tracking-[0.1em] text-gray-400 text-right">
-            {project.location}
-          </div>
-          {project.category && (
-            <div className="text-[10px] uppercase tracking-[0.08em] text-gray-300 text-right mt-1">
-              {project.category}
+        {/* Left: meta — desktop only, hidden when open */}
+        {!isMobile && (
+          <div
+            className="flex-shrink-0 flex flex-col items-end pr-10 pt-2 cursor-pointer overflow-hidden"
+            style={{
+              width: isOpen ? '0px' : '420px',
+              opacity: isOpen ? 0 : 1,
+              paddingRight: isOpen ? '0px' : undefined,
+              transition: 'width 0.35s ease, opacity 0.25s ease',
+            }}
+            onClick={onToggle}
+          >
+            <div className="w-12 h-12 bg-black flex items-center justify-center mb-3">
+              <CategoryIcon category={project.category} />
             </div>
-          )}
-        </div>
+            <div className="text-[16px] font-normal text-right mb-1 leading-snug">
+              {project.title}
+            </div>
+            <div className="text-[11px] uppercase tracking-[0.1em] text-gray-400 text-right">
+              {project.location}
+            </div>
+            {project.category && (
+              <div className="text-[10px] uppercase tracking-[0.08em] text-gray-300 text-right mt-1">
+                {project.category}
+              </div>
+            )}
+          </div>
+        )}
 
-        {/* Right: thumbnail / inline gallery */}
+        {/* Image / gallery container */}
         <div
           className="overflow-hidden relative flex-shrink-0"
           style={{
-            width: isOpen ? '100%' : `${PREVIEW_SIZE}px`,
-            height: isOpen ? `${GALLERY_HEIGHT}px` : `${PREVIEW_SIZE}px`,
+            width: isOpen ? '100%' : `${previewW}px`,
+            height: isOpen ? `${galleryH}px` : `${previewH}px`,
             transition: 'height 0.38s ease, width 0.38s ease',
           }}
         >
-          {/* Preview thumbnail — scales up and blurs out when opening */}
+          {/* Preview thumbnail */}
           <div
             className="absolute inset-0 cursor-pointer group"
             style={{
@@ -171,54 +188,65 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
               src={urlFor(project.mainImage).width(1000).height(1000).url()}
               alt={project.title}
               fill
-              sizes="500px"
+              sizes={isMobile ? '100vw' : '500px'}
               priority={priority}
               className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
             />
           </div>
 
-          {/* Inline gallery — renders after container transition completes */}
+          {/* Inline gallery */}
           {showGallery && (
-            <div
-              className="absolute inset-0 animate-fadeIn"
-              style={{ zIndex: 2 }}
-            >
+            <div className="absolute inset-0 animate-fadeIn" style={{ zIndex: 2 }}>
               <div
                 ref={scrollRef}
                 className="flex flex-row h-full overflow-x-auto overflow-y-hidden"
                 style={{
-                  scrollbarWidth: 'thin',
+                  scrollbarWidth: isMobile ? 'none' : 'thin',
                   scrollbarColor: '#ccc transparent',
                   overscrollBehaviorX: 'contain',
+                  scrollSnapType: isMobile ? 'x mandatory' : 'none',
                 }}
               >
                 {/* ── Col 1: Main image (click to close) ── */}
                 <div
                   className="flex-shrink-0 relative group cursor-pointer"
-                  style={{ width: '560px' }}
+                  style={{
+                    width: isMobile ? `${panelW}px` : '560px',
+                    scrollSnapAlign: isMobile ? 'start' : undefined,
+                  }}
                   onClick={onToggle}
                 >
                   <Image
                     src={urlFor(project.mainImage).width(1120).height(1040).url()}
                     alt={project.title}
                     fill
-                    sizes="560px"
+                    sizes={isMobile ? '100vw' : '560px'}
                     className="object-cover"
                   />
-                  {/* Close hint overlay */}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-end justify-start p-5">
                     <span className="text-white text-[11px] uppercase tracking-[0.12em] opacity-0 group-hover:opacity-100 transition-opacity">
                       ← Închide
                     </span>
                   </div>
+                  {/* Mobile close hint (always visible) */}
+                  {isMobile && (
+                    <div className="absolute top-4 right-4 bg-black/40 text-white text-[10px] tracking-[0.1em] uppercase px-2 py-1">
+                      ✕ Închide
+                    </div>
+                  )}
                 </div>
 
                 {/* ── Col 2: Description ── */}
                 <div
-                  className="flex-shrink-0 flex flex-col px-12 py-10 border-l border-gray-100"
-                  style={{ width: '380px', overflowY: 'auto', justifyContent: 'center' }}
+                  className="flex-shrink-0 flex flex-col border-l border-gray-100"
+                  style={{
+                    width: isMobile ? `${panelW}px` : '380px',
+                    padding: isMobile ? '32px 24px' : '40px 48px',
+                    overflowY: 'auto',
+                    justifyContent: 'center',
+                    scrollSnapAlign: isMobile ? 'start' : undefined,
+                  }}
                 >
-                  {/* Meta info */}
                   <div className="mb-6 space-y-3">
                     {project.year && (
                       <div>
@@ -251,7 +279,6 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
                       </div>
                     )}
                   </div>
-
                   {project.description ? (
                     <div className="text-[13px] leading-[1.8] text-gray-700 prose prose-sm max-w-none">
                       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -260,24 +287,36 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
                   ) : null}
                 </div>
 
-                {/* ── Gallery panels — ordered by user in Sanity ── */}
+                {/* ── Gallery panels ── */}
                 {project.gallery && project.gallery.map((item) => {
                   if (item._type === 'galleryImage') {
                     return (
-                      <div key={item._key} className="flex flex-row flex-shrink-0">
-                        <div className="flex-shrink-0 relative border-l border-gray-100" style={{ width: '480px' }}>
+                      <div
+                        key={item._key}
+                        className="flex flex-row flex-shrink-0"
+                        style={{ scrollSnapAlign: isMobile ? 'start' : undefined }}
+                      >
+                        <div
+                          className="flex-shrink-0 relative border-l border-gray-100"
+                          style={{ width: isMobile ? `${panelW}px` : '480px' }}
+                        >
                           <Image
                             src={urlFor(item.image).width(960).height(1040).url()}
                             alt={item.caption || 'Imagine'}
                             fill
-                            sizes="480px"
+                            sizes={isMobile ? '100vw' : '480px'}
                             className="object-cover"
                           />
-                        </div>
+                          </div>
+                        {/* Caption panel — separate container on both mobile and desktop */}
                         {item.caption && (
                           <div
                             className="flex-shrink-0 flex flex-col justify-center border-l border-gray-100 overflow-hidden"
-                            style={{ width: '300px', padding: '40px' }}
+                            style={{
+                              width: isMobile ? `${panelW}px` : '300px',
+                              padding: isMobile ? '24px' : '40px',
+                              scrollSnapAlign: isMobile ? 'start' : undefined,
+                            }}
                           >
                             <p
                               className="text-[13px] leading-[1.8] text-gray-700"
@@ -299,15 +338,33 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
                   if (item._type === 'gallerySlideshow') {
                     if (!item.slides?.length) return null
                     return (
-                      <div key={item._key} className="flex-shrink-0 relative border-l border-gray-100" style={{ width: '560px' }}>
-                        <GallerySlideshow slides={item.slides.map(s => ({ image: s, dimensions: s.dimensions }))} galleryHeight={GALLERY_HEIGHT} />
+                      <div
+                        key={item._key}
+                        className="flex-shrink-0 relative border-l border-gray-100"
+                        style={{
+                          width: isMobile ? `${panelW}px` : '560px',
+                          scrollSnapAlign: isMobile ? 'start' : undefined,
+                        }}
+                      >
+                        <GallerySlideshow
+                          slides={item.slides.map(s => ({ image: s, dimensions: s.dimensions }))}
+                          galleryHeight={galleryH}
+                          containerWidth={isMobile ? panelW : 560}
+                        />
                       </div>
                     )
                   }
 
                   if (item._type === 'galleryMap') {
                     return (
-                      <div key={item._key} className="flex-shrink-0 border-l border-gray-100 relative" style={{ width: '480px' }}>
+                      <div
+                        key={item._key}
+                        className="flex-shrink-0 border-l border-gray-100 relative"
+                        style={{
+                          width: isMobile ? `${panelW}px` : '480px',
+                          scrollSnapAlign: isMobile ? 'start' : undefined,
+                        }}
+                      >
                         <ProjectMap lat={item.lat} lng={item.lng} title={project.title} />
                       </div>
                     )
@@ -320,8 +377,8 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
           )}
         </div>
 
-        {/* Right: vertical category label — visible only in preview state */}
-        {!isOpen && (
+        {/* Right: vertical category label — desktop only, preview state */}
+        {!isMobile && !isOpen && (
           <div className="flex-1 flex items-center justify-start pl-10">
             <span
               style={{
@@ -340,6 +397,13 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
           </div>
         )}
       </div>
+      {/* Mobile: title + location below image */}
+      {isMobile && !isOpen && (
+        <div style={{ paddingLeft: '16px', paddingBottom: '14px', paddingTop: '8px' }}>
+          <div style={{ fontSize: '13px', fontWeight: 400, lineHeight: 1.3 }}>{project.title}</div>
+          <div style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#9ca3af', marginTop: '3px' }}>{project.location}</div>
+        </div>
+      )}
     </div>
   )
 }

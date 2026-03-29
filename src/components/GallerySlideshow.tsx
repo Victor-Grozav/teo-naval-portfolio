@@ -11,13 +11,15 @@ interface Slide {
 interface GallerySlideshowProps {
   slides: Slide[]
   galleryHeight: number
+  containerWidth?: number
 }
 
 const INTERVAL = 3500
 const FADE_MS = 600
-const CONTAINER_W = 560
+const DEFAULT_W = 560
 
-export default function GallerySlideshow({ slides, galleryHeight }: GallerySlideshowProps) {
+export default function GallerySlideshow({ slides, galleryHeight, containerWidth }: GallerySlideshowProps) {
+  const CONTAINER_W = containerWidth ?? DEFAULT_W
   const [current, setCurrent] = useState(0)
   const [fading, setFading] = useState(false)
 
