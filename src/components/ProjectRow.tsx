@@ -215,8 +215,8 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
 
                 {/* ── Col 2: Description ── */}
                 <div
-                  className="flex-shrink-0 flex flex-col justify-center px-12 py-10 border-l border-gray-100"
-                  style={{ width: '380px' }}
+                  className="flex-shrink-0 flex flex-col px-12 py-10 border-l border-gray-100"
+                  style={{ width: '380px', overflowY: 'auto', justifyContent: 'center' }}
                 >
                   {/* Meta info */}
                   <div className="mb-6 space-y-3">

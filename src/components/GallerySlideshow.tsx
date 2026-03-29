@@ -28,14 +28,14 @@ export default function GallerySlideshow({ slides }: GallerySlideshowProps) {
   }, [slides.length])
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full bg-black">
       <Image
         key={current}
-        src={urlFor(slides[current].image).width(1120).height(1040).url()}
+        src={urlFor(slides[current].image).width(1120).url()}
         alt={`Slide ${current + 1}`}
         fill
         sizes="560px"
-        className="object-cover"
+        className="object-contain"
         style={{
           opacity: fading ? 0 : 1,
           transition: `opacity ${FADE_MS}ms ease`,

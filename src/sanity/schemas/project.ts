@@ -152,7 +152,17 @@ export const projectSchema = defineType({
       name: 'description',
       title: 'Descriere',
       type: 'array',
+      description: 'Max ~800 caractere (inclusiv spații și aliniate) pentru a încăpea în container',
       of: [{ type: 'block' }],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      validation: (Rule) => Rule.custom((blocks: any[] | undefined) => {
+        if (!blocks || blocks.length === 0) return true
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const text = blocks.map((b: any) =>
+          b.children?.map((c: any) => c.text ?? '').join('') ?? ''
+        ).join('\n')
+        return text.length <= 800 || `Text prea lung — ${text.length}/800 caractere`
+      }),
     }),
     defineField({
       name: 'order',
