@@ -26,15 +26,8 @@ export default function ProjectsList({ projects }: { projects: Project[] }) {
 
   useEffect(() => {
     const handlePopState = () => setActiveId(null)
-    const handlePageShow = (e: PageTransitionEvent) => {
-      if (e.persisted) setActiveId(null)
-    }
     window.addEventListener('popstate', handlePopState)
-    window.addEventListener('pageshow', handlePageShow)
-    return () => {
-      window.removeEventListener('popstate', handlePopState)
-      window.removeEventListener('pageshow', handlePageShow)
-    }
+    return () => window.removeEventListener('popstate', handlePopState)
   }, [])
 
   const filtered = activeCategory
@@ -50,11 +43,12 @@ export default function ProjectsList({ projects }: { projects: Project[] }) {
             Niciun proiect în această categorie
           </div>
         ) : (
-          filtered.map((project) => (
+          filtered.map((project, index) => (
             <ProjectRow
               key={project._id}
               project={project}
               isOpen={activeId === project._id}
+              priority={index === 0}
               onToggle={() =>
                 setActiveId(activeId === project._id ? null : project._id)
               }

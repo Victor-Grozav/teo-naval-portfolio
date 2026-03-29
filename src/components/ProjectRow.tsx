@@ -1,9 +1,12 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { urlFor } from '@/lib/sanity'
-import ProjectDetail from './ProjectDetail'
+import { PortableText } from 'next-sanity'
+import dynamic from 'next/dynamic'
+
+const ProjectMap = dynamic(() => import('./ProjectMap'), { ssr: false })
 
 interface Project {
   _id: string
@@ -17,46 +20,102 @@ interface Project {
   category?: string
   mainImage: object
   gallery?: Array<{ image: object; caption?: string }>
-  description?: object[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  description?: any[]
   coordinates?: { lat: number; lng: number }
 }
 
 interface ProjectRowProps {
   project: Project
   isOpen: boolean
+  priority?: boolean
   onToggle: () => void
 }
 
-export default function ProjectRow({ project, isOpen, onToggle }: ProjectRowProps) {
-  const rowRef = useRef<HTMLDivElement>(null)
+function CategoryIcon({ category }: { category?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="white" width="22" height="22">
+      {category === 'Arhitectură' && (
+        <polygon points="12,3 22,19 2,19" />
+      )}
+      {category === 'Interior' && (
+        <polygon points="12,3 21,12 12,21 3,12" />
+      )}
+      {category === 'Peisagistică' && (
+        <circle cx="12" cy="12" r="9" />
+      )}
+      {category === 'Urban' && (<>
+        <rect x="10" y="2" width="4" height="20" />
+        <rect x="2" y="10" width="20" height="4" />
+      </>)}
+      {!category && (<>
+        <rect x="3" y="8" width="18" height="3" />
+        <rect x="3" y="13" width="18" height="3" />
+      </>)}
+    </svg>
+  )
+}
 
-  const handleOpen = () => {
-    onToggle()
-    if (!isOpen) {
+export default function ProjectRow({ project, isOpen, priority = false, onToggle }: ProjectRowProps) {
+  const rowRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  // Scroll into view when opening — only if row is below the fold
+  useEffect(() => {
+    if (isOpen) {
       setTimeout(() => {
-        rowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        const el = rowRef.current
+        if (!el) return
+        const rect = el.getBoundingClientRect()
+        if (rect.top > window.innerHeight * 0.35) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
       }, 80)
     }
-  }
+  }, [isOpen])
+
+  // Horizontal wheel handler for gallery
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+
+    const handleWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaX) > 0) {
+        e.preventDefault()
+        el.scrollLeft += e.deltaX
+      }
+    }
+
+    el.addEventListener('wheel', handleWheel, { passive: false })
+    return () => el.removeEventListener('wheel', handleWheel)
+  }, [isOpen])
+
+  const PREVIEW_SIZE = 500   // square preview
+  const GALLERY_HEIGHT = 520
 
   return (
     <div ref={rowRef} className="border-b border-gray-100">
-      {/* Summary row */}
       <div
-        className="flex items-start py-12 pr-0 cursor-pointer group"
-        onClick={handleOpen}
+        className="flex items-start pr-0"
+        style={{
+          paddingTop: isOpen ? '0px' : '48px',
+          paddingBottom: isOpen ? '0px' : '48px',
+          transition: 'padding 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
       >
-        {/* Left: meta */}
+        {/* Left: meta — hidden when gallery is open */}
         <div
-          className="flex-shrink-0 flex flex-col items-end pr-10 pt-2"
-          style={{ width: '420px' }}
+          className="flex-shrink-0 flex flex-col items-end pr-10 pt-2 cursor-pointer overflow-hidden"
+          style={{
+            width: isOpen ? '0px' : '420px',
+            opacity: isOpen ? 0 : 1,
+            paddingRight: isOpen ? '0px' : undefined,
+            transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease',
+          }}
+          onClick={onToggle}
         >
-          {/* Icon */}
           <div className="w-12 h-12 bg-black flex items-center justify-center mb-3">
-            <svg viewBox="0 0 24 24" fill="white" width="22" height="22">
-              <rect x="3" y="8" width="18" height="3" />
-              <rect x="3" y="13" width="18" height="3" />
-            </svg>
+            <CategoryIcon category={project.category} />
           </div>
           <div className="text-[16px] font-normal text-right mb-1 leading-snug">
             {project.title}
@@ -71,23 +130,167 @@ export default function ProjectRow({ project, isOpen, onToggle }: ProjectRowProp
           )}
         </div>
 
-        {/* Right: thumbnail */}
-        <div className="flex-1 overflow-hidden" style={{ height: '280px' }}>
-          <div className="relative w-full h-full overflow-hidden">
+        {/* Right: thumbnail / inline gallery */}
+        <div
+          className="overflow-hidden relative flex-shrink-0"
+          style={{
+            width: isOpen ? '100%' : `${PREVIEW_SIZE}px`,
+            height: isOpen ? `${GALLERY_HEIGHT}px` : `${PREVIEW_SIZE}px`,
+            transition: 'height 0.65s cubic-bezier(0.22, 1, 0.36, 1), width 0.65s cubic-bezier(0.22, 1, 0.36, 1)',
+          }}
+        >
+          {/* Preview thumbnail — scales up and blurs out when opening */}
+          <div
+            className="absolute inset-0 cursor-pointer group"
+            style={{
+              opacity: isOpen ? 0 : 1,
+              transform: isOpen ? 'scale(1.04)' : 'scale(1)',
+              filter: isOpen ? 'blur(6px)' : 'blur(0px)',
+              transition: 'opacity 0.4s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), filter 0.4s ease',
+              pointerEvents: isOpen ? 'none' : 'auto',
+              zIndex: 1,
+            }}
+            onClick={onToggle}
+          >
             <Image
-              src={urlFor(project.mainImage).width(1200).height(560).url()}
+              src={urlFor(project.mainImage).width(1000).height(1000).url()}
               alt={project.title}
               fill
+              sizes="500px"
+              priority={priority}
               className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
             />
           </div>
+
+          {/* Inline gallery — reveals with scale from center */}
+          {isOpen && (
+            <div
+              className="absolute inset-0 animate-galleryReveal"
+              style={{ zIndex: 2 }}
+            >
+              <div
+                ref={scrollRef}
+                className="flex flex-row h-full overflow-x-auto overflow-y-hidden"
+                style={{
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: '#ccc transparent',
+                  overscrollBehaviorX: 'contain',
+                }}
+              >
+                {/* ── Col 1: Main image (click to close) ── */}
+                <div
+                  className="flex-shrink-0 relative group cursor-pointer"
+                  style={{ width: '560px' }}
+                  onClick={onToggle}
+                >
+                  <Image
+                    src={urlFor(project.mainImage).width(1120).height(1040).url()}
+                    alt={project.title}
+                    fill
+                    sizes="560px"
+                    className="object-cover"
+                  />
+                  {/* Close hint overlay */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-end justify-start p-5">
+                    <span className="text-white text-[11px] uppercase tracking-[0.12em] opacity-0 group-hover:opacity-100 transition-opacity">
+                      ← Închide
+                    </span>
+                  </div>
+                </div>
+
+                {/* ── Col 2: Description ── */}
+                <div
+                  className="flex-shrink-0 flex flex-col justify-center px-12 py-10 border-l border-gray-100"
+                  style={{ width: '380px' }}
+                >
+                  {/* Meta info */}
+                  <div className="mb-6 space-y-3">
+                    {project.year && (
+                      <div>
+                        <div className="text-[9px] uppercase tracking-[0.12em] text-gray-400 mb-1">An</div>
+                        <div className="text-[11px] font-medium uppercase tracking-[0.04em]">{project.year}</div>
+                      </div>
+                    )}
+                    {project.client && (
+                      <div>
+                        <div className="text-[9px] uppercase tracking-[0.12em] text-gray-400 mb-1">Client</div>
+                        <div className="text-[11px] font-medium uppercase tracking-[0.04em]">{project.client}</div>
+                      </div>
+                    )}
+                    {project.typology && (
+                      <div>
+                        <div className="text-[9px] uppercase tracking-[0.12em] text-gray-400 mb-1">Tipologie</div>
+                        <div className="text-[11px] font-medium uppercase tracking-[0.04em]">{project.typology}</div>
+                      </div>
+                    )}
+                    {project.surface && (
+                      <div>
+                        <div className="text-[9px] uppercase tracking-[0.12em] text-gray-400 mb-1">Suprafață</div>
+                        <div className="text-[11px] font-medium uppercase tracking-[0.04em]">{project.surface}</div>
+                      </div>
+                    )}
+                    {project.status && (
+                      <div>
+                        <div className="text-[9px] uppercase tracking-[0.12em] text-gray-400 mb-1">Status</div>
+                        <div className="text-[11px] font-medium uppercase tracking-[0.04em]">{project.status}</div>
+                      </div>
+                    )}
+                  </div>
+
+                  {project.description ? (
+                    <div className="text-[13px] leading-[1.8] text-gray-700 prose prose-sm max-w-none">
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                      <PortableText value={project.description as any} />
+                    </div>
+                  ) : null}
+                </div>
+
+                {/* ── Col 3+: Gallery images ── */}
+                {project.gallery && project.gallery.length > 0 &&
+                  project.gallery.map((item, idx) => (
+                    <div key={idx} className="flex flex-row flex-shrink-0">
+                      <div
+                        className="flex-shrink-0 relative border-l border-gray-100"
+                        style={{ width: '480px' }}
+                      >
+                        <Image
+                          src={urlFor(item.image).width(960).height(1040).url()}
+                          alt={item.caption || `Imagine ${idx + 2}`}
+                          fill
+                          sizes="480px"
+                          className="object-cover"
+                        />
+                      </div>
+                      {item.caption && (
+                        <div
+                          className="flex-shrink-0 flex flex-col justify-center px-10 py-10 border-l border-gray-100"
+                          style={{ width: '300px' }}
+                        >
+                          <p className="text-[13px] leading-[1.8] text-gray-700">{item.caption}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                }
+
+                {/* ── Map panel ── */}
+                {project.coordinates?.lat && project.coordinates?.lng && (
+                  <div
+                    className="flex-shrink-0 border-l border-gray-100 relative"
+                    style={{ width: '480px' }}
+                  >
+                    <ProjectMap
+                      lat={project.coordinates.lat}
+                      lng={project.coordinates.lng}
+                      title={project.title}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Expanded detail */}
-      {isOpen && (
-        <ProjectDetail project={project} onClose={onToggle} />
-      )}
     </div>
   )
 }
