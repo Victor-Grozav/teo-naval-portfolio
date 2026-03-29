@@ -49,6 +49,7 @@ export default function GallerySlideshow({ slides, galleryHeight }: GallerySlide
         style={{
           opacity: fading ? 0 : 1,
           transition: `opacity ${FADE_MS}ms ease`,
+          objectPosition: 'center center',
         }}
       />
       {/* Counter */}
