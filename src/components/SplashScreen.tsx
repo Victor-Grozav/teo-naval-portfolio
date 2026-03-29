@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 
 const FULL_TEXT = 'TEO NAVAL'
-const START_DELAY = 500
+const START_DELAY = 800
 const TYPE_SPEED = 105
 const POST_TYPE_DELAY = 650
 const MOVE_DURATION = 700
@@ -33,21 +33,24 @@ export default function SplashScreen() {
 
     const cursorTimer = setInterval(() => setCursorOn(v => !v), 500)
 
-    setTimeout(() => {
-      let i = 0
-      const typeTimer = setInterval(() => {
-        i++
-        setDisplayText(FULL_TEXT.slice(0, i))
-        if (i === FULL_TEXT.length) {
-          clearInterval(typeTimer)
-          setTimeout(() => {
-            clearInterval(cursorTimer)
-            setCursorOn(false)
-            startMoveToNav()
-          }, POST_TYPE_DELAY)
-        }
-      }, TYPE_SPEED)
-    }, START_DELAY)
+    // Double rAF ensures the overlay is painted before we start counting the delay
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      setTimeout(() => {
+        let i = 0
+        const typeTimer = setInterval(() => {
+          i++
+          setDisplayText(FULL_TEXT.slice(0, i))
+          if (i === FULL_TEXT.length) {
+            clearInterval(typeTimer)
+            setTimeout(() => {
+              clearInterval(cursorTimer)
+              setCursorOn(false)
+              startMoveToNav()
+            }, POST_TYPE_DELAY)
+          }
+        }, TYPE_SPEED)
+      }, START_DELAY)
+    }))
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
