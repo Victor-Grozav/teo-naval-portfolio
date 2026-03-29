@@ -11,7 +11,7 @@ const ProjectMap = dynamic(() => import('./ProjectMap'), { ssr: false })
 
 type GalleryItem =
   | { _type: 'galleryImage'; _key: string; image: object; caption?: string }
-  | { _type: 'gallerySlideshow'; _key: string; slides: object[] }
+  | { _type: 'gallerySlideshow'; _key: string; slides: Array<{ dimensions?: { width: number; height: number } } & object> }
   | { _type: 'galleryMap'; _key: string; lat: number; lng: number }
 
 interface Project {
@@ -298,8 +298,8 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
 
                   if (item._type === 'gallerySlideshow') {
                     return (
-                      <div key={item._key} className="flex-shrink-0 relative border-l border-gray-100" style={{ width: '560px' }}>
-                        <GallerySlideshow slides={item.slides.map(s => ({ image: s }))} />
+                      <div key={item._key} className="flex-shrink-0 relative border-l border-gray-100">
+                        <GallerySlideshow slides={item.slides.map(s => ({ image: s, dimensions: s.dimensions }))} galleryHeight={GALLERY_HEIGHT} />
                       </div>
                     )
                   }

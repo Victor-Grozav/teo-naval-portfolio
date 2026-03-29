@@ -36,7 +36,7 @@ export async function getProjects() {
         image,
         caption,
         // gallerySlideshow
-        slides[]{_key, asset, hotspot, crop},
+        slides[]{_key, asset, "dimensions": asset->metadata.dimensions, hotspot, crop},
         // galleryMap
         lat,
         lng
