@@ -41,9 +41,8 @@ export default function GallerySlideshow({ slides, galleryHeight }: GallerySlide
       style={{
         width: CONTAINER_W,
         height: galleryHeight,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        display: 'grid',
+        placeItems: 'center',
         backgroundColor: '#fff',
       }}
     >
@@ -53,8 +52,8 @@ export default function GallerySlideshow({ slides, galleryHeight }: GallerySlide
         src={src}
         alt={`Slide ${current + 1}`}
         style={{
-          maxWidth: '100%',
-          maxHeight: '100%',
+          maxWidth: CONTAINER_W,
+          maxHeight: galleryHeight,
           width: 'auto',
           height: 'auto',
           display: 'block',
