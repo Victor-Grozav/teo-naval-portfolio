@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from 'react'
 
 const FULL_TEXT = 'TEO NAVAL'
-const TYPE_SPEED = 85
+const START_DELAY = 500
+const TYPE_SPEED = 105
 const POST_TYPE_DELAY = 650
 const MOVE_DURATION = 700
 const FADE_DURATION = 600
@@ -32,19 +33,21 @@ export default function SplashScreen() {
 
     const cursorTimer = setInterval(() => setCursorOn(v => !v), 500)
 
-    let i = 0
-    const typeTimer = setInterval(() => {
-      i++
-      setDisplayText(FULL_TEXT.slice(0, i))
-      if (i === FULL_TEXT.length) {
-        clearInterval(typeTimer)
-        setTimeout(() => {
-          clearInterval(cursorTimer)
-          setCursorOn(false)
-          startMoveToNav()
-        }, POST_TYPE_DELAY)
-      }
-    }, TYPE_SPEED)
+    setTimeout(() => {
+      let i = 0
+      const typeTimer = setInterval(() => {
+        i++
+        setDisplayText(FULL_TEXT.slice(0, i))
+        if (i === FULL_TEXT.length) {
+          clearInterval(typeTimer)
+          setTimeout(() => {
+            clearInterval(cursorTimer)
+            setCursorOn(false)
+            startMoveToNav()
+          }, POST_TYPE_DELAY)
+        }
+      }, TYPE_SPEED)
+    }, START_DELAY)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
