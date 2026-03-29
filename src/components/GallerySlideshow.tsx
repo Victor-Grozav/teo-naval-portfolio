@@ -33,7 +33,9 @@ export default function GallerySlideshow({ slides, galleryHeight }: GallerySlide
     return () => clearInterval(timer)
   }, [slides.length])
 
-  const src = urlFor(slides[current].image).width(CONTAINER_W * 2).url()
+  const slide = slides[current]
+  if (!slide?.image) return null
+  const src = urlFor(slide.image).width(CONTAINER_W * 2).url()
 
   return (
     <div

@@ -297,6 +297,7 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
                   }
 
                   if (item._type === 'gallerySlideshow') {
+                    if (!item.slides?.length) return null
                     return (
                       <div key={item._key} className="flex-shrink-0 relative border-l border-gray-100" style={{ width: '560px' }}>
                         <GallerySlideshow slides={item.slides.map(s => ({ image: s, dimensions: s.dimensions }))} galleryHeight={GALLERY_HEIGHT} />
