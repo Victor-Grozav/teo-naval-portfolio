@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import Image from 'next/image'
 import { urlFor } from '@/lib/sanity'
 import { PortableText } from 'next-sanity'
@@ -59,6 +59,17 @@ function CategoryIcon({ category }: { category?: string }) {
 export default function ProjectRow({ project, isOpen, priority = false, onToggle }: ProjectRowProps) {
   const rowRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
+  // Delay gallery render until container transition finishes — eliminates end-of-transition pop
+  const [showGallery, setShowGallery] = useState(false)
+
+  useEffect(() => {
+    if (isOpen) {
+      const t = setTimeout(() => setShowGallery(true), 340)
+      return () => clearTimeout(t)
+    } else {
+      setShowGallery(false)
+    }
+  }, [isOpen])
 
   // Scroll into view when opening — only if row is below the fold
   useEffect(() => {
@@ -100,7 +111,7 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
         style={{
           paddingTop: isOpen ? '0px' : '48px',
           paddingBottom: isOpen ? '0px' : '48px',
-          transition: 'padding 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'padding 0.35s ease',
         }}
       >
         {/* Left: meta — hidden when gallery is open */}
@@ -110,7 +121,7 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
             width: isOpen ? '0px' : '420px',
             opacity: isOpen ? 0 : 1,
             paddingRight: isOpen ? '0px' : undefined,
-            transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease',
+            transition: 'width 0.35s ease, opacity 0.25s ease',
           }}
           onClick={onToggle}
         >
@@ -136,7 +147,7 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
           style={{
             width: isOpen ? '100%' : `${PREVIEW_SIZE}px`,
             height: isOpen ? `${GALLERY_HEIGHT}px` : `${PREVIEW_SIZE}px`,
-            transition: 'height 0.65s cubic-bezier(0.22, 1, 0.36, 1), width 0.65s cubic-bezier(0.22, 1, 0.36, 1)',
+            transition: 'height 0.38s ease, width 0.38s ease',
           }}
         >
           {/* Preview thumbnail — scales up and blurs out when opening */}
@@ -144,9 +155,8 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
             className="absolute inset-0 cursor-pointer group"
             style={{
               opacity: isOpen ? 0 : 1,
-              transform: isOpen ? 'scale(1.04)' : 'scale(1)',
-              filter: isOpen ? 'blur(6px)' : 'blur(0px)',
-              transition: 'opacity 0.4s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), filter 0.4s ease',
+              transform: isOpen ? 'scale(1.03)' : 'scale(1)',
+              transition: 'opacity 0.25s ease, transform 0.35s ease',
               pointerEvents: isOpen ? 'none' : 'auto',
               zIndex: 1,
             }}
@@ -162,10 +172,10 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
             />
           </div>
 
-          {/* Inline gallery — reveals with scale from center */}
-          {isOpen && (
+          {/* Inline gallery — renders after container transition completes */}
+          {showGallery && (
             <div
-              className="absolute inset-0 animate-galleryReveal"
+              className="absolute inset-0 animate-fadeIn"
               style={{ zIndex: 2 }}
             >
               <div

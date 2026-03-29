@@ -43,7 +43,7 @@ html[data-splash='1'] body > * {
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.4s ease;
+  animation: fadeIn 0.3s ease;
 }
 
 @keyframes galleryReveal {
