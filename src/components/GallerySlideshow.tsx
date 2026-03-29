@@ -16,6 +16,7 @@ interface GallerySlideshowProps {
 
 const INTERVAL = 3500
 const FADE_MS = 600
+const CONTAINER_W = 560
 
 export default function GallerySlideshow({ slides, galleryHeight }: GallerySlideshowProps) {
   const [current, setCurrent] = useState(0)
@@ -33,30 +34,21 @@ export default function GallerySlideshow({ slides, galleryHeight }: GallerySlide
     return () => clearInterval(timer)
   }, [slides.length])
 
-  const slide = slides[current]
-  const dims = slide.dimensions
-  const renderedH = galleryHeight
-  // Fall back to square if dimensions not available
-  const renderedW = dims ? Math.round((dims.width / dims.height) * renderedH) : renderedH
-
   return (
     <div
       className="relative bg-white flex-shrink-0"
-      style={{ width: renderedW, height: renderedH }}
+      style={{ width: CONTAINER_W, height: galleryHeight }}
     >
       <Image
         key={current}
-        src={urlFor(slide.image).width(renderedW * 2).url()}
+        src={urlFor(slides[current].image).width(CONTAINER_W * 2).url()}
         alt={`Slide ${current + 1}`}
-        width={renderedW}
-        height={renderedH}
-        className="block"
+        fill
+        sizes={`${CONTAINER_W}px`}
+        className="object-contain"
         style={{
           opacity: fading ? 0 : 1,
           transition: `opacity ${FADE_MS}ms ease`,
-          width: renderedW,
-          height: renderedH,
-          objectFit: 'fill',
         }}
       />
       {/* Counter */}
