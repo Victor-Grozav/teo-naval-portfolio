@@ -15,7 +15,8 @@ interface Project {
   status?: string
   category?: string
   mainImage: object
-  gallery?: Array<{ image: object; caption?: string }>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  gallery?: any[]
   description?: object[]
   coordinates?: { lat: number; lng: number }
 }

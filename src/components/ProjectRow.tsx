@@ -5,8 +5,14 @@ import Image from 'next/image'
 import { urlFor } from '@/lib/sanity'
 import { PortableText } from 'next-sanity'
 import dynamic from 'next/dynamic'
+import GallerySlideshow from './GallerySlideshow'
 
 const ProjectMap = dynamic(() => import('./ProjectMap'), { ssr: false })
+
+type GalleryItem =
+  | { _type: 'galleryImage'; _key: string; image: object; caption?: string }
+  | { _type: 'gallerySlideshow'; _key: string; slides: object[] }
+  | { _type: 'galleryMap'; _key: string; lat: number; lng: number }
 
 interface Project {
   _id: string
@@ -19,10 +25,9 @@ interface Project {
   status?: string
   category?: string
   mainImage: object
-  gallery?: Array<{ image: object; caption?: string }>
+  gallery?: GalleryItem[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   description?: any[]
-  coordinates?: { lat: number; lng: number }
 }
 
 interface ProjectRowProps {
@@ -255,51 +260,86 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
                   ) : null}
                 </div>
 
-                {/* ── Col 3+: Gallery images ── */}
-                {project.gallery && project.gallery.length > 0 &&
-                  project.gallery.map((item, idx) => (
-                    <div key={idx} className="flex flex-row flex-shrink-0">
-                      <div
-                        className="flex-shrink-0 relative border-l border-gray-100"
-                        style={{ width: '480px' }}
-                      >
-                        <Image
-                          src={urlFor(item.image).width(960).height(1040).url()}
-                          alt={item.caption || `Imagine ${idx + 2}`}
-                          fill
-                          sizes="480px"
-                          className="object-cover"
-                        />
-                      </div>
-                      {item.caption && (
-                        <div
-                          className="flex-shrink-0 flex flex-col justify-center px-10 py-10 border-l border-gray-100"
-                          style={{ width: '300px' }}
-                        >
-                          <p className="text-[13px] leading-[1.8] text-gray-700">{item.caption}</p>
+                {/* ── Gallery panels — ordered by user in Sanity ── */}
+                {project.gallery && project.gallery.map((item) => {
+                  if (item._type === 'galleryImage') {
+                    return (
+                      <div key={item._key} className="flex flex-row flex-shrink-0">
+                        <div className="flex-shrink-0 relative border-l border-gray-100" style={{ width: '480px' }}>
+                          <Image
+                            src={urlFor(item.image).width(960).height(1040).url()}
+                            alt={item.caption || 'Imagine'}
+                            fill
+                            sizes="480px"
+                            className="object-cover"
+                          />
                         </div>
-                      )}
-                    </div>
-                  ))
-                }
+                        {item.caption && (
+                          <div
+                            className="flex-shrink-0 flex flex-col justify-center border-l border-gray-100 overflow-hidden"
+                            style={{ width: '300px', padding: '40px' }}
+                          >
+                            <p
+                              className="text-[13px] leading-[1.8] text-gray-700"
+                              style={{
+                                overflowWrap: 'break-word',
+                                wordBreak: 'break-word',
+                                display: '-webkit-box',
+                                WebkitLineClamp: 18,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                              }}
+                            >
+                              {item.caption}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  }
 
-                {/* ── Map panel ── */}
-                {project.coordinates?.lat && project.coordinates?.lng && (
-                  <div
-                    className="flex-shrink-0 border-l border-gray-100 relative"
-                    style={{ width: '480px' }}
-                  >
-                    <ProjectMap
-                      lat={project.coordinates.lat}
-                      lng={project.coordinates.lng}
-                      title={project.title}
-                    />
-                  </div>
-                )}
+                  if (item._type === 'gallerySlideshow') {
+                    return (
+                      <div key={item._key} className="flex-shrink-0 relative border-l border-gray-100" style={{ width: '560px' }}>
+                        <GallerySlideshow slides={item.slides.map(s => ({ image: s }))} />
+                      </div>
+                    )
+                  }
+
+                  if (item._type === 'galleryMap') {
+                    return (
+                      <div key={item._key} className="flex-shrink-0 border-l border-gray-100 relative" style={{ width: '480px' }}>
+                        <ProjectMap lat={item.lat} lng={item.lng} title={project.title} />
+                      </div>
+                    )
+                  }
+
+                  return null
+                })}
               </div>
             </div>
           )}
         </div>
+
+        {/* Right: vertical category label — visible only in preview state */}
+        {!isOpen && (
+          <div className="flex-1 flex items-center justify-start pl-10">
+            <span
+              style={{
+                writingMode: 'vertical-rl',
+                transform: 'rotate(180deg)',
+                fontSize: '11px',
+                letterSpacing: '0.25em',
+                textTransform: 'uppercase',
+                color: '#d1d5db',
+                userSelect: 'none',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {project.category || 'Proiect'}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -83,19 +83,65 @@ export const projectSchema = defineType({
     }),
     defineField({
       name: 'gallery',
-      title: 'Galerie imagini (scroll orizontal)',
+      title: 'Galerie scroll orizontal',
       type: 'array',
+      description: 'Adaugă și ordonează paneluri: imagini, slideshow automat sau hartă.',
       of: [
         {
           type: 'object',
+          name: 'galleryImage',
+          title: 'Imagine',
           fields: [
             { name: 'image', title: 'Imagine', type: 'image', options: { hotspot: true } },
-            { name: 'caption', title: 'Legendă (opțional)', type: 'string' },
+            defineField({
+              name: 'caption',
+              title: 'Legendă (opțional)',
+              type: 'string',
+              validation: (Rule) => Rule.max(500),
+              description: 'Max 500 caractere',
+            }),
           ],
           preview: {
             select: { media: 'image', title: 'caption' },
-            prepare({ media, title }) {
-              return { title: title || 'Imagine', media }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            prepare(val: any) {
+              return { title: val.title || 'Imagine', media: val.media }
+            },
+          },
+        },
+        {
+          type: 'object',
+          name: 'gallerySlideshow',
+          title: 'Slideshow',
+          fields: [
+            {
+              name: 'slides',
+              title: 'Imagini slideshow',
+              type: 'array',
+              of: [{ type: 'image', options: { hotspot: true } }],
+            },
+          ],
+          preview: {
+            select: { slides: 'slides' },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            prepare(val: any) {
+              return { title: `Slideshow — ${val.slides?.length || 0} imagini` }
+            },
+          },
+        },
+        {
+          type: 'object',
+          name: 'galleryMap',
+          title: 'Locație (Hartă)',
+          fields: [
+            { name: 'lat', title: 'Latitudine', type: 'number', description: 'Ex: 47.0105' },
+            { name: 'lng', title: 'Longitudine', type: 'number', description: 'Ex: 28.8638' },
+          ],
+          preview: {
+            select: { lat: 'lat', lng: 'lng' },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            prepare(val: any) {
+              return { title: `Hartă — ${val.lat ?? '?'}, ${val.lng ?? '?'}` }
             },
           },
         },
@@ -106,26 +152,6 @@ export const projectSchema = defineType({
       title: 'Descriere',
       type: 'array',
       of: [{ type: 'block' }],
-    }),
-    defineField({
-      name: 'coordinates',
-      title: 'Coordonate hartă',
-      type: 'object',
-      description: 'Adaugă coordonatele GPS pentru a afișa proiectul pe hartă',
-      fields: [
-        {
-          name: 'lat',
-          title: 'Latitudine',
-          type: 'number',
-          description: 'Ex: 47.0105',
-        },
-        {
-          name: 'lng',
-          title: 'Longitudine',
-          type: 'number',
-          description: 'Ex: 28.8638',
-        },
-      ],
     }),
     defineField({
       name: 'order',

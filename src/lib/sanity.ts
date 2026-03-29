@@ -29,9 +29,19 @@ export async function getProjects() {
       status,
       category,
       mainImage,
-      gallery,
+      "gallery": gallery[]{
+        _type,
+        _key,
+        // galleryImage
+        image,
+        caption,
+        // gallerySlideshow
+        slides[]{_key, asset, hotspot, crop},
+        // galleryMap
+        lat,
+        lng
+      },
       description,
-      coordinates,
       order
     }
   `)
