@@ -28,7 +28,7 @@ export default function GallerySlideshow({ slides }: GallerySlideshowProps) {
   }, [slides.length])
 
   return (
-    <div className="relative w-full h-full bg-black">
+    <div className="relative w-full h-full bg-white">
       <Image
         key={current}
         src={urlFor(slides[current].image).width(1120).url()}
