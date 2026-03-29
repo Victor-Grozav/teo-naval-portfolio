@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Image from 'next/image'
 import { urlFor } from '@/lib/sanity'
 
 interface Slide {
@@ -34,22 +33,33 @@ export default function GallerySlideshow({ slides, galleryHeight }: GallerySlide
     return () => clearInterval(timer)
   }, [slides.length])
 
+  const src = urlFor(slides[current].image).width(CONTAINER_W * 2).url()
+
   return (
     <div
-      className="relative bg-white flex-shrink-0"
-      style={{ width: CONTAINER_W, height: galleryHeight }}
+      className="relative flex-shrink-0"
+      style={{
+        width: CONTAINER_W,
+        height: galleryHeight,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#fff',
+      }}
     >
-      <Image
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         key={current}
-        src={urlFor(slides[current].image).width(CONTAINER_W * 2).url()}
+        src={src}
         alt={`Slide ${current + 1}`}
-        fill
-        sizes={`${CONTAINER_W}px`}
-        className="object-contain"
         style={{
+          maxWidth: '100%',
+          maxHeight: '100%',
+          width: 'auto',
+          height: 'auto',
+          display: 'block',
           opacity: fading ? 0 : 1,
           transition: `opacity ${FADE_MS}ms ease`,
-          objectPosition: 'center center',
         }}
       />
       {/* Counter */}
