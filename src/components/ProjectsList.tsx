@@ -24,6 +24,14 @@ interface Project {
 export default function ProjectsList({ projects }: { projects: Project[] }) {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
+  const [vw, setVw] = useState(0)
+
+  useEffect(() => {
+    const update = () => setVw(window.innerWidth)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
 
   useEffect(() => {
     const handlePopState = () => setActiveId(null)
@@ -50,6 +58,7 @@ export default function ProjectsList({ projects }: { projects: Project[] }) {
               project={project}
               isOpen={activeId === project._id}
               priority={index === 0}
+              vw={vw}
               onToggle={() =>
                 setActiveId(activeId === project._id ? null : project._id)
               }

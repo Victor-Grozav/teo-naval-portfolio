@@ -34,6 +34,7 @@ interface ProjectRowProps {
   project: Project
   isOpen: boolean
   priority?: boolean
+  vw: number
   onToggle: () => void
 }
 
@@ -61,18 +62,10 @@ function CategoryIcon({ category }: { category?: string }) {
   )
 }
 
-export default function ProjectRow({ project, isOpen, priority = false, onToggle }: ProjectRowProps) {
+export default function ProjectRow({ project, isOpen, priority = false, vw, onToggle }: ProjectRowProps) {
   const rowRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [showGallery, setShowGallery] = useState(false)
-  const [vw, setVw] = useState(0) // 0 = SSR (renders desktop)
-
-  useEffect(() => {
-    const update = () => setVw(window.innerWidth)
-    update()
-    window.addEventListener('resize', update)
-    return () => window.removeEventListener('resize', update)
-  }, [])
 
   const isMobile = vw > 0 && vw < 768
 
