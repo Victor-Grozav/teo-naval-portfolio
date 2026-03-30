@@ -17,10 +17,20 @@ export default function Nav({ activeCategory, onCategoryChange }: NavProps) {
         </div>
         {/* Desktop categories */}
         <ul className="hidden sm:flex gap-12">
+          <li>
+            <button
+              onClick={() => onCategoryChange(null)}
+              className={`text-[11px] tracking-[0.12em] uppercase transition-opacity ${
+                activeCategory === null ? 'opacity-100' : 'opacity-50 hover:opacity-100'
+              }`}
+            >
+              Toate
+            </button>
+          </li>
           {categories.map((cat) => (
             <li key={cat}>
               <button
-                onClick={() => onCategoryChange(activeCategory === cat ? null : cat)}
+                onClick={() => onCategoryChange(cat)}
                 className={`text-[11px] tracking-[0.12em] uppercase transition-opacity ${
                   activeCategory === cat ? 'opacity-100' : 'opacity-50 hover:opacity-100'
                 }`}
@@ -39,10 +49,18 @@ export default function Nav({ activeCategory, onCategoryChange }: NavProps) {
         className="sm:hidden flex overflow-x-auto border-t border-gray-50 px-4 py-2 gap-6"
         style={{ scrollbarWidth: 'none' }}
       >
+        <button
+          onClick={() => onCategoryChange(null)}
+          className={`flex-shrink-0 text-[10px] tracking-[0.12em] uppercase transition-opacity ${
+            activeCategory === null ? 'opacity-100' : 'opacity-40'
+          }`}
+        >
+          Toate
+        </button>
         {categories.map((cat) => (
           <button
             key={cat}
-            onClick={() => onCategoryChange(activeCategory === cat ? null : cat)}
+            onClick={() => onCategoryChange(cat)}
             className={`flex-shrink-0 text-[10px] tracking-[0.12em] uppercase transition-opacity ${
               activeCategory === cat ? 'opacity-100' : 'opacity-40'
             }`}
