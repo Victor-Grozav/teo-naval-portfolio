@@ -86,9 +86,7 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
 
   useEffect(() => {
     if (isOpen) {
-      // Mobile: gallery renders almost immediately (slide handles the reveal)
-      // Desktop: wait for container height transition to finish
-      const t = setTimeout(() => setShowGallery(true), isMobile ? 30 : 340)
+      const t = setTimeout(() => setShowGallery(true), isMobile ? 180 : 340)
       return () => clearTimeout(t)
     } else {
       setShowGallery(false)
@@ -171,19 +169,19 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
           style={{
             width: isOpen ? '100%' : `${previewW}px`,
             height: isOpen ? `${galleryH}px` : `${previewH}px`,
-            transition: isMobile ? 'height 0.15s ease, width 0.15s ease' : 'height 0.38s ease, width 0.38s ease',
+            transition: isMobile
+              ? 'height 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94), width 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+              : 'height 0.38s ease, width 0.38s ease',
           }}
         >
           {/* Preview thumbnail */}
           <div
             className="absolute inset-0 cursor-pointer group"
             style={{
-              opacity: isMobile ? 1 : (isOpen ? 0 : 1),
-              transform: isMobile
-                ? (isOpen ? 'translateX(-100%)' : 'translateX(0)')
-                : (isOpen ? 'scale(1.03)' : 'scale(1)'),
+              opacity: isOpen ? 0 : 1,
+              transform: isOpen ? 'scale(1.03)' : 'scale(1)',
               transition: isMobile
-                ? 'transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)'
+                ? 'opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
                 : 'opacity 0.25s ease, transform 0.35s ease',
               pointerEvents: isOpen ? 'none' : 'auto',
               zIndex: 1,
@@ -202,7 +200,7 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
 
           {/* Inline gallery */}
           {showGallery && (
-            <div className={`absolute inset-0 ${isMobile ? 'animate-slideFromRight' : 'animate-fadeIn'}`} style={{ zIndex: 2 }}>
+            <div className="absolute inset-0 animate-fadeIn" style={{ zIndex: 2 }}>
               <div
                 ref={scrollRef}
                 className="flex flex-row h-full overflow-x-auto overflow-y-hidden"
