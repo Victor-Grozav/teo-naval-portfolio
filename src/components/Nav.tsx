@@ -46,7 +46,7 @@ export default function Nav({ activeCategory, onCategoryChange, searchQuery, onS
               onClick={closeSearch}
               className="text-[11px] tracking-[0.12em] uppercase opacity-40 hover:opacity-100 transition-opacity"
             >
-              ✕
+              ×
             </button>
           </div>
         ) : (
@@ -56,8 +56,10 @@ export default function Nav({ activeCategory, onCategoryChange, searchQuery, onS
               <li>
                 <button
                   onClick={() => onCategoryChange(null)}
-                  className={`text-[11px] tracking-[0.12em] uppercase transition-opacity ${
-                    activeCategory === null ? 'opacity-100' : 'opacity-50 hover:opacity-100'
+                  className={`text-[11px] tracking-[0.12em] uppercase transition-opacity pb-0.5 ${
+                    activeCategory === null
+                      ? 'opacity-100 border-b border-black'
+                      : 'opacity-50 hover:opacity-100'
                   }`}
                 >
                   Toate
@@ -67,8 +69,10 @@ export default function Nav({ activeCategory, onCategoryChange, searchQuery, onS
                 <li key={cat}>
                   <button
                     onClick={() => onCategoryChange(cat)}
-                    className={`text-[11px] tracking-[0.12em] uppercase transition-opacity ${
-                      activeCategory === cat ? 'opacity-100' : 'opacity-50 hover:opacity-100'
+                    className={`text-[11px] tracking-[0.12em] uppercase transition-opacity pb-0.5 ${
+                      activeCategory === cat
+                        ? 'opacity-100 border-b border-black'
+                        : 'opacity-50 hover:opacity-100'
                     }`}
                   >
                     {cat}
@@ -94,8 +98,8 @@ export default function Nav({ activeCategory, onCategoryChange, searchQuery, onS
         >
           <button
             onClick={() => onCategoryChange(null)}
-            className={`flex-shrink-0 text-[10px] tracking-[0.12em] uppercase transition-opacity ${
-              activeCategory === null ? 'opacity-100' : 'opacity-40'
+            className={`flex-shrink-0 text-[10px] tracking-[0.12em] uppercase transition-opacity pb-0.5 ${
+              activeCategory === null ? 'opacity-100 border-b border-black' : 'opacity-40'
             }`}
           >
             Toate
@@ -104,8 +108,8 @@ export default function Nav({ activeCategory, onCategoryChange, searchQuery, onS
             <button
               key={cat}
               onClick={() => onCategoryChange(cat)}
-              className={`flex-shrink-0 text-[10px] tracking-[0.12em] uppercase transition-opacity ${
-                activeCategory === cat ? 'opacity-100' : 'opacity-40'
+              className={`flex-shrink-0 text-[10px] tracking-[0.12em] uppercase transition-opacity pb-0.5 ${
+                activeCategory === cat ? 'opacity-100 border-b border-black' : 'opacity-40'
               }`}
             >
               {cat}

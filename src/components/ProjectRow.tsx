@@ -189,6 +189,11 @@ export default function ProjectRow({ project, isOpen, priority = false, vw, onTo
               priority={priority}
               className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
             />
+            {isMobile && (
+              <div className="absolute bottom-3 right-3 bg-black/50 text-white text-[9px] tracking-[0.12em] uppercase px-2 py-1">
+                Vezi →
+              </div>
+            )}
           </div>
 
           {/* Inline gallery */}
@@ -228,7 +233,7 @@ export default function ProjectRow({ project, isOpen, priority = false, vw, onTo
                   {/* Mobile close hint (always visible) */}
                   {isMobile && (
                     <div className="absolute top-4 right-4 bg-black/40 text-white text-[10px] tracking-[0.1em] uppercase px-2 py-1">
-                      ✕ Închide
+                      × Închide
                     </div>
                   )}
                 </div>

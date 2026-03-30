@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Teo Naval — Arhitectură & Design",
-  description: "Portofoliu Teo Naval, arhitect în Republica Moldova",
+  title: "Old Architecture — Arhitectură & Design",
+  description: "Portofoliu de arhitectură și design — Old Architecture, Republica Moldova",
 };
 
 export default function RootLayout({

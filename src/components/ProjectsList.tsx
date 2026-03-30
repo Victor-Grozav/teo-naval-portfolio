@@ -53,7 +53,7 @@ export default function ProjectsList({ projects }: { projects: Project[] }) {
       <section>
         {filtered.length === 0 ? (
           <div className="flex items-center justify-center h-64 text-gray-400 text-sm tracking-widest uppercase">
-            Niciun proiect în această categorie
+            {searchQuery.trim() ? `Niciun rezultat pentru „${searchQuery.trim()}"` : 'Niciun proiect în această categorie'}
           </div>
         ) : (
           filtered.map((project, index) => (
@@ -71,7 +71,7 @@ export default function ProjectsList({ projects }: { projects: Project[] }) {
         )}
       </section>
       <footer className="px-8 py-10 border-t border-gray-100 flex justify-between items-center text-[11px] tracking-[0.08em] text-gray-300">
-        <span>TEO NAVAL — ARHITECTURĂ & DESIGN</span>
+        <span>OLD ARCHITECTURE — ARHITECTURĂ & DESIGN</span>
         <span>© {new Date().getFullYear()}</span>
       </footer>
     </>

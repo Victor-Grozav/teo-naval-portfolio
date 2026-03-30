@@ -26,13 +26,10 @@ export default function SplashScreen() {
   const [displayText, setDisplayText] = useState('')
   const [cursorOn, setCursorOn] = useState(true)
   const [overlayFading, setOverlayFading] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
+  // SplashScreen is always loaded client-side (ssr:false), so window is safe here
+  const [isMobile] = useState(() => window.innerWidth < 768)
   const textRef = useRef<HTMLDivElement>(null)
   const started = useRef(false)
-
-  useEffect(() => {
-    setIsMobile(window.innerWidth < 768)
-  }, [])
 
   useEffect(() => {
     // Strict Mode guard — only start once per mount cycle

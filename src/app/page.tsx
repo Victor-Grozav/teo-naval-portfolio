@@ -1,7 +1,7 @@
 import { getProjects } from '@/lib/sanity'
 import ProjectsList from '@/components/ProjectsList'
 
-export const revalidate = 60
+export const revalidate = 10
 
 export default async function Home() {
   const projects = await getProjects()
