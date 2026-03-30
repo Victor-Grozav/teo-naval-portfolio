@@ -42,8 +42,8 @@ export default function ProjectsList({ projects }: { projects: Project[] }) {
 
   const q = searchQuery.toLowerCase().trim()
   const filtered = projects.filter((p) => {
+    if (q) return p.title.toLowerCase().includes(q) || p.location.toLowerCase().includes(q)
     if (activeCategory && p.category !== activeCategory) return false
-    if (q && !p.title.toLowerCase().includes(q) && !p.location.toLowerCase().includes(q)) return false
     return true
   })
 
