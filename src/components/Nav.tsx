@@ -13,7 +13,7 @@ export default function Nav({ activeCategory, onCategoryChange }: NavProps) {
       {/* Main row */}
       <div className="flex items-center px-4 sm:px-8 h-[50px] sm:h-[60px]">
         <div className="text-[15px] sm:text-[17px] font-semibold tracking-[0.08em] mr-auto cursor-pointer select-none">
-          TEO NAVAL
+          OLD ARCHITECTURE
         </div>
         {/* Desktop categories */}
         <ul className="hidden sm:flex gap-12">

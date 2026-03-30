@@ -2,26 +2,37 @@
 
 import { useState, useEffect, useRef } from 'react'
 
-const FULL_TEXT = 'TEO NAVAL'
+const FULL_TEXT = 'OLD ARCHITECTURE'
 const START_DELAY = 800
-const TYPE_SPEED = 105
+const TYPE_SPEED = 80
 const POST_TYPE_DELAY = 650
 const MOVE_DURATION = 700
 const FADE_DURATION = 600
 
-const NAV_TOP = 20
-const NAV_LEFT = 32
-const NAV_FONT_SIZE = 17
-const SPLASH_FONT_SIZE = 58
-const SCALE = NAV_FONT_SIZE / SPLASH_FONT_SIZE
+// Desktop constants
+const NAV_TOP_DESKTOP = 20
+const NAV_LEFT_DESKTOP = 32
+const NAV_FONT_DESKTOP = 17
+const SPLASH_FONT_DESKTOP = 52
+
+// Mobile constants
+const NAV_TOP_MOBILE = 17
+const NAV_LEFT_MOBILE = 16
+const NAV_FONT_MOBILE = 15
+const SPLASH_FONT_MOBILE = 26
 
 export default function SplashScreen() {
   const [visible, setVisible] = useState(false)
   const [displayText, setDisplayText] = useState('')
   const [cursorOn, setCursorOn] = useState(true)
   const [overlayFading, setOverlayFading] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const textRef = useRef<HTMLDivElement>(null)
   const started = useRef(false)
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768)
+  }, [])
 
   useEffect(() => {
     // Strict Mode guard — only start once per mount cycle
@@ -57,6 +68,13 @@ export default function SplashScreen() {
   function startMoveToNav() {
     const el = textRef.current
     if (!el) return
+
+    const mobile = window.innerWidth < 768
+    const NAV_TOP = mobile ? NAV_TOP_MOBILE : NAV_TOP_DESKTOP
+    const NAV_LEFT = mobile ? NAV_LEFT_MOBILE : NAV_LEFT_DESKTOP
+    const NAV_FONT = mobile ? NAV_FONT_MOBILE : NAV_FONT_DESKTOP
+    const SPLASH_FONT = mobile ? SPLASH_FONT_MOBILE : SPLASH_FONT_DESKTOP
+    const SCALE = NAV_FONT / SPLASH_FONT
 
     const rect = el.getBoundingClientRect()
 
@@ -114,9 +132,9 @@ export default function SplashScreen() {
           left: '50%',
           transform: 'translate(-50%, -50%)',
           color: '#fff',
-          fontSize: SPLASH_FONT_SIZE + 'px',
+          fontSize: (isMobile ? SPLASH_FONT_MOBILE : SPLASH_FONT_DESKTOP) + 'px',
           fontWeight: 600,
-          letterSpacing: '0.22em',
+          letterSpacing: isMobile ? '0.12em' : '0.22em',
           fontFamily: 'var(--font-geist-sans), "Helvetica Neue", Helvetica, sans-serif',
           whiteSpace: 'nowrap',
           userSelect: 'none',
