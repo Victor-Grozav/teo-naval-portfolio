@@ -9,7 +9,6 @@ export default defineConfig({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   plugins: [structureTool(), visionTool()],
-  defaultTool: 'structure',
   schema: {
     types: [projectSchema],
   },
