@@ -204,7 +204,7 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
                   scrollbarWidth: isMobile ? 'none' : 'thin',
                   scrollbarColor: '#ccc transparent',
                   overscrollBehaviorX: 'contain',
-                  scrollSnapType: isMobile ? 'x mandatory' : 'none',
+                  scrollSnapType: 'none',
                 }}
               >
                 {/* ── Col 1: Main image (click to close) ── */}
@@ -212,7 +212,7 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
                   className="flex-shrink-0 relative group cursor-pointer"
                   style={{
                     width: isMobile ? `${panelW}px` : '560px',
-                    scrollSnapAlign: isMobile ? 'start' : undefined,
+                    
                   }}
                   onClick={onToggle}
                 >
@@ -244,7 +244,7 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
                     padding: isMobile ? '32px 24px' : '40px 48px',
                     overflowY: 'auto',
                     justifyContent: 'center',
-                    scrollSnapAlign: isMobile ? 'start' : undefined,
+                    
                   }}
                 >
                   <div className="mb-6 space-y-3">
@@ -315,7 +315,7 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
                             style={{
                               width: isMobile ? `${panelW}px` : '300px',
                               padding: isMobile ? '24px' : '40px',
-                              scrollSnapAlign: isMobile ? 'start' : undefined,
+                              
                             }}
                           >
                             <p
@@ -343,7 +343,7 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
                         className="flex-shrink-0 relative border-l border-gray-100"
                         style={{
                           width: isMobile ? `${panelW}px` : '560px',
-                          scrollSnapAlign: isMobile ? 'start' : undefined,
+                          
                         }}
                       >
                         <GallerySlideshow
@@ -362,7 +362,7 @@ export default function ProjectRow({ project, isOpen, priority = false, onToggle
                         className="flex-shrink-0 border-l border-gray-100 relative"
                         style={{
                           width: isMobile ? `${panelW}px` : '480px',
-                          scrollSnapAlign: isMobile ? 'start' : undefined,
+                          
                         }}
                       >
                         <ProjectMap lat={item.lat} lng={item.lng} title={project.title} />
