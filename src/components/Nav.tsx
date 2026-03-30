@@ -78,7 +78,7 @@ export default function Nav({ activeCategory, onCategoryChange, searchQuery, onS
             </ul>
             <button
               onClick={() => setSearchOpen(true)}
-              className="sm:ml-12 text-[11px] tracking-[0.12em] uppercase opacity-50 cursor-pointer hover:opacity-100 transition-opacity"
+              className="sm:ml-12 text-[18px] opacity-50 cursor-pointer hover:opacity-100 transition-opacity leading-none"
             >
               ⌕
             </button>
