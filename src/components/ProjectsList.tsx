@@ -24,6 +24,7 @@ interface Project {
 export default function ProjectsList({ projects }: { projects: Project[] }) {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
   const [vw, setVw] = useState(0)
 
   useEffect(() => {
@@ -39,13 +40,16 @@ export default function ProjectsList({ projects }: { projects: Project[] }) {
     return () => window.removeEventListener('popstate', handlePopState)
   }, [])
 
-  const filtered = activeCategory
-    ? projects.filter((p) => p.category === activeCategory)
-    : projects
+  const q = searchQuery.toLowerCase().trim()
+  const filtered = projects.filter((p) => {
+    if (activeCategory && p.category !== activeCategory) return false
+    if (q && !p.title.toLowerCase().includes(q) && !p.location.toLowerCase().includes(q)) return false
+    return true
+  })
 
   return (
     <>
-      <Nav activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
+      <Nav activeCategory={activeCategory} onCategoryChange={setActiveCategory} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <section>
         {filtered.length === 0 ? (
           <div className="flex items-center justify-center h-64 text-gray-400 text-sm tracking-widest uppercase">
