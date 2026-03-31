@@ -7,7 +7,7 @@ export default async function Home() {
   const projects = await getProjects()
 
   return (
-    <main>
+    <main className="flex flex-col flex-1">
       <ProjectsList projects={projects} />
     </main>
   )

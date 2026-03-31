@@ -53,9 +53,9 @@ export default function ProjectsList({ projects }: { projects: Project[] }) {
   })
 
   return (
-    <>
+    <div className="flex flex-col flex-1">
       <Nav activeCategory={activeCategory} onCategoryChange={handleCategoryChange} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-      <section>
+      <section className="flex-1">
         {filtered.length === 0 ? (
           <div className="flex items-center justify-center h-64 text-gray-400 text-sm tracking-widest uppercase">
             {searchQuery.trim() ? `Niciun rezultat pentru „${searchQuery.trim()}"` : 'Niciun proiect în această categorie'}
@@ -79,6 +79,6 @@ export default function ProjectsList({ projects }: { projects: Project[] }) {
         <span>OLD ARCHITECTURE — ARHITECTURĂ & DESIGN</span>
         <span>© {new Date().getFullYear()}</span>
       </footer>
-    </>
+    </div>
   )
 }
