@@ -120,6 +120,8 @@ export const projectSchema = defineType({
               title: 'Imagini slideshow',
               type: 'array',
               of: [{ type: 'image', options: { hotspot: true } }],
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              validation: (Rule: any) => Rule.min(1).error('Slideshow-ul trebuie să conțină cel puțin o imagine.'),
             },
           ],
           preview: {
@@ -135,8 +137,30 @@ export const projectSchema = defineType({
           name: 'galleryMap',
           title: 'Locație (Hartă)',
           fields: [
-            { name: 'lat', title: 'Latitudine', type: 'number', description: 'Ex: 47.0105' },
-            { name: 'lng', title: 'Longitudine', type: 'number', description: 'Ex: 28.8638' },
+            {
+              name: 'lat',
+              title: 'Latitudine',
+              type: 'number',
+              description: 'Ex: 47.0105',
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              validation: (Rule: any) =>
+                Rule.required()
+                  .min(-90)
+                  .max(90)
+                  .error('Latitudinea trebuie să fie un număr între -90 și 90.'),
+            },
+            {
+              name: 'lng',
+              title: 'Longitudine',
+              type: 'number',
+              description: 'Ex: 28.8638',
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              validation: (Rule: any) =>
+                Rule.required()
+                  .min(-180)
+                  .max(180)
+                  .error('Longitudinea trebuie să fie un număr între -180 și 180.'),
+            },
           ],
           preview: {
             select: { lat: 'lat', lng: 'lng' },
@@ -169,6 +193,7 @@ export const projectSchema = defineType({
       title: 'Ordine afișare',
       type: 'number',
       description: 'Număr mai mic = apare primul',
+      initialValue: 99,
     }),
   ],
   orderings: [
