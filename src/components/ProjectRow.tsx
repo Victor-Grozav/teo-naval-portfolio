@@ -123,7 +123,7 @@ export default function ProjectRow({ project, isOpen, priority = false, vw, onTo
         style={{
           paddingTop: isOpen ? '0px' : isMobile ? '16px' : '48px',
           paddingBottom: isOpen ? '0px' : isMobile ? '16px' : '48px',
-          paddingLeft: isMobile && !isOpen ? '16px' : '0px',
+          justifyContent: isMobile && !isOpen ? 'center' : undefined,
           transition: 'padding 0.35s ease',
         }}
       >
@@ -402,7 +402,7 @@ export default function ProjectRow({ project, isOpen, priority = false, vw, onTo
       </div>
       {/* Mobile: title + location below image */}
       {isMobile && !isOpen && (
-        <div style={{ paddingLeft: '16px', paddingBottom: '14px', paddingTop: '8px' }}>
+        <div style={{ paddingBottom: '14px', paddingTop: '8px', textAlign: 'center' }}>
           <div style={{ fontSize: '13px', fontWeight: 400, lineHeight: 1.3 }}>{project.title}</div>
           <div style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#9ca3af', marginTop: '3px' }}>{project.location}</div>
         </div>
