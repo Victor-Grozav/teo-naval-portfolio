@@ -24,6 +24,11 @@ interface Project {
 export default function ProjectsList({ projects }: { projects: Project[] }) {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
+
+  function handleCategoryChange(cat: string | null) {
+    setActiveCategory(cat)
+    setActiveId(null)
+  }
   const [searchQuery, setSearchQuery] = useState('')
   const [vw, setVw] = useState(0)
 
@@ -49,7 +54,7 @@ export default function ProjectsList({ projects }: { projects: Project[] }) {
 
   return (
     <>
-      <Nav activeCategory={activeCategory} onCategoryChange={setActiveCategory} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+      <Nav activeCategory={activeCategory} onCategoryChange={handleCategoryChange} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <section>
         {filtered.length === 0 ? (
           <div className="flex items-center justify-center h-64 text-gray-400 text-sm tracking-widest uppercase">
