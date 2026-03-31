@@ -247,7 +247,7 @@ export default function ProjectRow({ project, isOpen, priority = false, vw, onTo
                     padding: isMobile ? '32px 24px' : '40px 48px',
                     overflowY: 'auto',
                     overflowX: 'hidden',
-                    justifyContent: 'center',
+                    justifyContent: isMobile ? 'flex-start' : 'center',
                   }}
                 >
                   <div className="mb-6 space-y-3">
