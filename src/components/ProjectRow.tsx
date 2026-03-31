@@ -86,9 +86,9 @@ export default function ProjectRow({ project, isOpen, priority = false, vw, onTo
     }
   }, [isOpen, isMobile])
 
-  // Scroll into view when opening
+  // Scroll into view when opening — desktop only
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !isMobile) {
       setTimeout(() => {
         const el = rowRef.current
         if (!el) return
@@ -98,7 +98,7 @@ export default function ProjectRow({ project, isOpen, priority = false, vw, onTo
         }
       }, 80)
     }
-  }, [isOpen])
+  }, [isOpen, isMobile])
 
   // Horizontal wheel handler for gallery (desktop only)
   useEffect(() => {
