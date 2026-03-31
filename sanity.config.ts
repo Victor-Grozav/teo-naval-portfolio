@@ -4,8 +4,8 @@ import { visionTool } from '@sanity/vision'
 import { projectSchema } from './src/sanity/schemas/project'
 
 export default defineConfig({
-  name: 'teo-naval-portfolio',
-  title: 'Teo Naval Portfolio',
+  name: 'old-architecture-portfolio',
+  title: 'Old Architecture Portfolio',
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   plugins: [structureTool(), visionTool()],
