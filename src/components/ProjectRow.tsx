@@ -243,10 +243,11 @@ export default function ProjectRow({ project, isOpen, priority = false, vw, onTo
                   className="flex-shrink-0 flex flex-col border-l border-gray-100"
                   style={{
                     width: isMobile ? `${panelW}px` : '380px',
+                    minWidth: 0,
                     padding: isMobile ? '32px 24px' : '40px 48px',
                     overflowY: 'auto',
+                    overflowX: 'hidden',
                     justifyContent: 'center',
-                    
                   }}
                 >
                   <div className="mb-6 space-y-3">
@@ -282,7 +283,7 @@ export default function ProjectRow({ project, isOpen, priority = false, vw, onTo
                     )}
                   </div>
                   {project.description ? (
-                    <div className="text-[13px] leading-[1.8] text-gray-700 prose prose-sm max-w-none">
+                    <div className="text-[13px] leading-[1.8] text-gray-700 prose prose-sm max-w-none" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                       <PortableText value={project.description as any} />
                     </div>
